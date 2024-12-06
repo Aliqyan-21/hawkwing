@@ -36,6 +36,8 @@ func (r *Router) AddRoute(method, path string, handler http.HandlerFunc, middlew
 	regexStr := "^" + regexp.MustCompile(`:([a-zA-Z_][a-zA-Z0-9_]*)`).ReplaceAllString(path, `(?P<$1>[^/]+)`) + "$"
 	compiledRegex := regexp.MustCompile(regexStr)
 
+	middlewares = append([]middleware.Middleware{middleware.Logger}, middlewares...)
+
 	r.routes[method] = append(r.routes[method], route{
 		pattern:     compiledRegex,
 		handler:     handler,

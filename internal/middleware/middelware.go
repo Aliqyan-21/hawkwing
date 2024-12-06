@@ -14,7 +14,7 @@ func Logger(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func Authenticator(next http.HandlerFunc) http.HandlerFunc {
+func Auth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		token := req.Header.Get("Authorization")
 		if token == "" {
@@ -27,7 +27,7 @@ func Authenticator(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func CheckContentType(contentType string, next http.HandlerFunc) http.HandlerFunc {
+func ContentType(contentType string, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		if req.Header.Get("Content-Type") != contentType {
 			http.Error(w, "Invalid Content-Type", http.StatusBadRequest)
