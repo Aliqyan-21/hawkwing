@@ -46,6 +46,27 @@ func (r *Router) AddRoute(method, path string, handler http.HandlerFunc, middlew
 	})
 }
 
+func (r *Router) FetchDynamic(req *http.Request) map[string]string {
+	if params, ok := req.Context().Value("params").(map[string]string); ok {
+		return params
+	}
+	return nil
+}
+
+func (r *Router) dynamicParams(pathPattern, actualPath string) map[string]string {
+	params := make(map[string]string)
+	re := regexp.MustCompile(pathPattern)
+	matches := re.FindStringSubmatch(actualPath)
+	if len(matches) > 0 {
+		for i, name := range re.SubexpNames() {
+			if i > 0 && name != "" {
+				params[name] = matches[i]
+			}
+		}
+	}
+	return params
+}
+
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	method := req.Method
 	path := normalizePath(req.URL.Path)

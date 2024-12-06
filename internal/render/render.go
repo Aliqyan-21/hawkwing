@@ -43,14 +43,12 @@ func watcher(templateDir string) {
 		return
 	}
 
-	log.Println("Watching for template changes...")
-
 	for {
 		select {
 		case event := <-watcher.Events:
 			if event.Op&fsnotify.Write == fsnotify.Write {
 				log.Println("Detected change in template:", event.Name)
-				LoadTemplates(templateDir) // Reload the templates
+				LoadTemplates(templateDir)
 			}
 		case err := <-watcher.Errors:
 			log.Println("Error watching files:", err)

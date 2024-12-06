@@ -29,8 +29,6 @@ func watcher(staticDir string) {
 		return
 	}
 
-	log.Println("Watching for static file changes...")
-
 	for {
 		select {
 		case event := <-watcher.Events:
