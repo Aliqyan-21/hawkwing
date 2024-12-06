@@ -46,7 +46,7 @@ func (r *Router) AddRoute(method, path string, handler http.HandlerFunc, middlew
 	})
 }
 
-func (r *Router) FetchDynamic(req *http.Request) map[string]string {
+func (r *Router) GetRouteParams(req *http.Request) map[string]string {
 	if params, ok := req.Context().Value("params").(map[string]string); ok {
 		return params
 	}
