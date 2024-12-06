@@ -1,30 +1,32 @@
 package main
 
 import (
-	"fmt"
+	"github.com/aliqyan-21/hawkwing/internal/render"
 	"github.com/aliqyan-21/hawkwing/internal/router"
 	"net/http"
 )
 
 func main() {
-	r := router.New()
+	app := router.New()
 
-	// Static route with middleware
-	r.AddRoute("GET", "/hello", func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "Hello, World!")
+	// this is to specify in which directory the html files are
+	render.LoadTemplates("./cmd/templates")
+
+	app.AddRoute("GET", "/", func(w http.ResponseWriter, req *http.Request) {
+		data := map[string]interface{}{
+			"Title": "Home Page",
+			"Body":  "Welcome to Hawkwing Framework",
+		}
+		render.RenderHTML(w, "home.html", data)
 	})
 
-	// Dynamic route with middleware
-	r.AddRoute("GET", "/users/:name", func(w http.ResponseWriter, req *http.Request) {
-		params := req.Context().Value("params").(map[string]string)
-		name := params["name"]
-		fmt.Fprintf(w, "Hello, %s!", name)
+	app.AddRoute("GET", "/about", func(w http.ResponseWriter, req *http.Request) {
+		data := map[string]interface{}{
+			"Title": "About Us",
+			"Body":  "A lightweight user friendly web framework",
+		}
+		render.RenderHTML(w, "about.html", data)
 	})
 
-	// Another static route
-	r.AddRoute("GET", "/about", func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "This is the about page.")
-	})
-
-	router.Start(":8080", r)
+	router.Start(":8080", app)
 }
