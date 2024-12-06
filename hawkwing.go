@@ -4,6 +4,7 @@ import (
 	"github.com/aliqyan-21/hawkwing/internal/middleware"
 	"github.com/aliqyan-21/hawkwing/internal/render"
 	"github.com/aliqyan-21/hawkwing/internal/router"
+	"github.com/aliqyan-21/hawkwing/internal/static"
 	"net/http"
 )
 
@@ -19,8 +20,8 @@ func Start(port string, r *router.Router) {
 	router.Start(port, r)
 }
 
-func LoadStatic(r *router.Router, routePath, dir string) {
-	r.LoadStatic(routePath, dir)
+func LoadStatic(routePath, dir string) {
+	static.LoadStatic(routePath, dir)
 }
 
 func GetRouteParams(r *http.Request) map[string]string {
