@@ -15,15 +15,16 @@ func AddRoute(r *router.Router, method, path string, handler http.HandlerFunc, m
 	r.AddRoute(method, path, handler, middlewares...)
 }
 
+func Start(port string, r *router.Router) {
+	Start(port, r)
+}
+
 func LoadStatic(r *router.Router, routePath, dir string) {
 	r.LoadStatic(routePath, dir)
 }
 
 func GetRouteParams(r *http.Request) map[string]string {
-	if params, ok := r.Context().Value("params").(map[string]string); ok {
-		return params
-	}
-	return nil
+	return GetRouteParams(r)
 }
 
 func LoadTemplates(templateDir string) {
