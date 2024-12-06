@@ -16,7 +16,7 @@ func AddRoute(r *router.Router, method, path string, handler http.HandlerFunc, m
 }
 
 func Start(port string, r *router.Router) {
-	Start(port, r)
+	router.Start(port, r)
 }
 
 func LoadStatic(r *router.Router, routePath, dir string) {
