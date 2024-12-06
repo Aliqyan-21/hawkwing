@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/aliqyan-21/hawkwing/internal/middleware"
+	"github.com/aliqyan-21/hawkwing/internal/static"
 	"log"
 	"net/http"
 	"regexp"
@@ -82,6 +83,10 @@ func extractParams(pattern *regexp.Regexp, path string) map[string]string {
 		}
 	}
 	return params
+}
+
+func (r *Router) LoadStatic(routePath, dir string) {
+	r.AddRoute("GET", routePath+"(.*)", static.LoadStatic(routePath, dir))
 }
 
 func Start(port string, r *Router) {

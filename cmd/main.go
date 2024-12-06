@@ -9,8 +9,9 @@ import (
 func main() {
 	app := router.New()
 
-	// this is to specify in which directory the html files are
 	render.LoadTemplates("./cmd/templates")
+
+	app.LoadStatic("/static/", "./cmd/static")
 
 	app.AddRoute("GET", "/", func(w http.ResponseWriter, req *http.Request) {
 		data := map[string]interface{}{
@@ -18,14 +19,6 @@ func main() {
 			"Body":  "Welcome to Hawkwing Framework",
 		}
 		render.RenderHTML(w, "home.html", data)
-	})
-
-	app.AddRoute("GET", "/about", func(w http.ResponseWriter, req *http.Request) {
-		data := map[string]interface{}{
-			"Title": "About Us",
-			"Body":  "A lightweight user friendly web framework",
-		}
-		render.RenderHTML(w, "about.html", data)
 	})
 
 	router.Start(":8080", app)
