@@ -38,13 +38,16 @@ func Auth(next http.HandlerFunc) http.HandlerFunc {
 
 // ContentType is a middleware that checks the request's Content-Type header.
 // It ensures that the Content-Type matches the specified value. If not, it returns a 400 Bad Request response.
-func ContentType(contentType string, next http.HandlerFunc) http.HandlerFunc {
+func ContentType(contentTypes []string, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		if req.Header.Get("Content-Type") != contentType {
-			http.Error(w, "Invalid Content-Type", http.StatusBadRequest)
-			log.Printf("Invalid Content-Type: %s", req.Header.Get("Content-Type"))
-			return
+		contentType := req.Header.Get("Content-Type")
+		for _, ct := range contentTypes {
+			if contentType == ct {
+				next(w, req)
+				return
+			}
 		}
-		next(w, req)
+		http.Error(w, "Invalid Content-Type", http.StatusBadRequest)
+		log.Printf("Invalid Content-Type: %s", contentType)
 	}
 }

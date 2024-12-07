@@ -21,8 +21,8 @@ func AddRoute(r *router.Router, method, path string, handler http.HandlerFunc, m
 }
 
 // Start initializes and starts an HTTP server on the specified port, using the provided router instance.
-func Start(port string, r *router.Router) {
-	router.Start(port, r)
+func Start(host, port string, r *router.Router) {
+	router.Start(host, port, r)
 }
 
 // LoadStatic registers a handler for serving static files from a specified directory.

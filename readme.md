@@ -64,7 +64,11 @@ func main() {
 	})
 
 	// Start the server
-	hawking.Start(":5000", r)
+    // Localhost only
+	hawkwing.Start("localhost", "8080", r)
+
+	// Publicly accessible
+	// hawkwing.Start("0.0.0.0", "8080", r)
 }
 ```
 

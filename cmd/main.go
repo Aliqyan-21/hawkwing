@@ -21,5 +21,8 @@ func main() {
 		render.RenderHTML(w, "home.html", data)
 	})
 
-	router.Start(":8080", app)
+	// router.Start("localhost", "8080", app)
+
+	// public
+	router.Start("0.0.0.0", "8080", app)
 }

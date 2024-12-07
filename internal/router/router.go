@@ -4,12 +4,14 @@ package router
 import (
 	"context"
 	"fmt"
-	"github.com/aliqyan-21/hawkwing/internal/middleware"
-	"github.com/aliqyan-21/hawkwing/internal/static"
 	"log"
+	"net"
 	"net/http"
 	"regexp"
 	"strings"
+
+	"github.com/aliqyan-21/hawkwing/internal/middleware"
+	"github.com/aliqyan-21/hawkwing/internal/static"
 )
 
 // route represents a single route in the router, including its pattern, handler function, and associated middlewares.
@@ -60,7 +62,7 @@ func (r *Router) GetRouteParams(req *http.Request) map[string]string {
 	if params, ok := req.Context().Value("params").(map[string]string); ok {
 		return params
 	}
-	return nil
+	return map[string]string{}
 }
 
 // dynamicParams extracts dynamic parameters (e.g., :id, :name, :hawk) from a path based on a given route pattern.
@@ -124,12 +126,58 @@ func (r *Router) LoadStatic(routePath, dir string) {
 	r.AddRoute("GET", routePath+"(.*)", static.LoadStatic(routePath, dir))
 }
 
-// Start initializes and starts an HTTP server on the specified port, using the router instance to handle incoming requests.
-func Start(port string, r *Router) {
-	fmt.Printf("Hawkwing server is running on port %s\n", port)
-	fmt.Printf("Url: http://localhost%s\n", port)
-	err := http.ListenAndServe(port, r)
+// Start initializes and starts an HTTP server on the specified host and port, using the router instance to handle incoming requests.
+func Start(host, port string, r *Router) {
+	address := fmt.Sprintf("%s:%s", host, port)
+	fmt.Printf("Hawkwing server is running on %s\n", address)
+
+	if host == "0.0.0.0" {
+		fmt.Println("Server is publicly accessible.")
+		// getting the local IP address of the machine😁
+		ip, err := getLocalIP()
+		if err != nil {
+			fmt.Println("Could not determine local IP address.")
+		} else {
+			fmt.Printf("Access the server at: http://%s:%s\n", ip, port)
+		}
+	} else {
+		fmt.Printf("URL: http://%s:%s\n", host, port)
+	}
+
+	err := http.ListenAndServe(address, r)
 	if err != nil {
 		log.Fatalf("Could not start server: %s\n", err)
 	}
+}
+
+// getLocalIP retrieves the first non-loopback IP address of the host machine for displaying in terminal.
+func getLocalIP() (string, error) {
+	interfaces, err := net.Interfaces()
+	if err != nil {
+		return "", err
+	}
+
+	for _, iface := range interfaces {
+		if iface.Flags&(net.FlagUp|net.FlagLoopback) == net.FlagLoopback {
+			continue
+		}
+
+		addrs, err := iface.Addrs()
+		if err != nil {
+			continue
+		}
+
+		for _, addr := range addrs {
+			switch v := addr.(type) {
+			case *net.IPNet:
+				ip := v.IP
+				if ip.IsLoopback() || ip.To4() == nil {
+					continue
+				}
+				return ip.String(), nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("no non-loopback address found")
 }
