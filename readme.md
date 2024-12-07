@@ -50,24 +50,24 @@ import (
 )
 
 func main() {
-	app := hawking.Init()
+    app := hawking.Init()
 
-	// Load templates and static files
-	hawking.LoadTemplates("templates")
-	app.LoadStatic("/static", "static")
+    // Load templates and static files
+    hawking.LoadTemplates("templates")
+    app.LoadStatic("/static", "static")
 
-	// Add routes
-	app.AddRoute("GET", "/", func(w http.ResponseWriter, r *http.Request) {
-		hawking.RenderHTML(w, "index.html", map[string]interface{}{
-			"title": "Welcome to Hawkwing!",
-		})
-	})
+    // Add routes
+    app.AddRoute("GET", "/", func(w http.ResponseWriter, r *http.Request) {
+        hawking.RenderHTML(w, "index.html", map[string]interface{}{
+            "title": "Welcome to Hawkwing!",
+        })
+    })
 
     // start server on Localhost only
-	hawkwing.Start("localhost", "8080", r)
+    hawkwing.Start("localhost", "8080", r)
 
-	// Publicly accessible server
-	// hawkwing.Start("0.0.0.0", "8080", r)
+    // Publicly accessible server
+    // hawkwing.Start("0.0.0.0", "8080", r)
 }
 ```
 
