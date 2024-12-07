@@ -4,14 +4,17 @@ package router
 import (
 	"context"
 	"fmt"
+	"github.com/aliqyan-21/hawkwing/internal/middleware"
+	"github.com/aliqyan-21/hawkwing/internal/static"
 	"log"
 	"net"
 	"net/http"
+	"os"
+	"os/signal"
 	"regexp"
 	"strings"
-
-	"github.com/aliqyan-21/hawkwing/internal/middleware"
-	"github.com/aliqyan-21/hawkwing/internal/static"
+	"syscall"
+	"time"
 )
 
 // route represents a single route in the router, including its pattern, handler function, and associated middlewares.
@@ -129,6 +132,12 @@ func (r *Router) LoadStatic(routePath, dir string) {
 // Start initializes and starts an HTTP server on the specified host and port, using the router instance to handle incoming requests.
 func Start(host, port string, r *Router) {
 	address := fmt.Sprintf("%s:%s", host, port)
+
+	server := &http.Server{
+		Addr:    address,
+		Handler: r,
+	}
+
 	fmt.Printf("Hawkwing server is running on %s\n", address)
 
 	if host == "0.0.0.0" {
@@ -144,10 +153,26 @@ func Start(host, port string, r *Router) {
 		fmt.Printf("URL: http://%s:%s\n", host, port)
 	}
 
-	err := http.ListenAndServe(address, r)
-	if err != nil {
-		log.Fatalf("Could not start server: %s\n", err)
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Could not start server: %s\n", err)
+		}
+	}()
+
+	<-stop
+	fmt.Println("\nShutting down server gracefully...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatalf("Error during server shutdown: %s\n", err)
 	}
+
+	fmt.Println("Hawkwing landed gracefully🦅 : Server stopped")
 }
 
 // getLocalIP retrieves the first non-loopback IP address of the host machine for displaying in terminal.
