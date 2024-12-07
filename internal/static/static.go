@@ -1,3 +1,4 @@
+// Package static provides utilities for serving static files efficiently.
 package static
 
 import (
@@ -7,6 +8,9 @@ import (
 	"path/filepath"
 )
 
+// LoadStatic registers a handler that serves static files from a specified directory.
+// It accepts a route path for prefixing the URLs and the actual directory containing the static files.
+// Additionally, it starts a goroutine to watch for changes in the directory and logs them.
 func LoadStatic(routePath, dir string) http.HandlerFunc {
 	go watcher(dir)
 	fs := http.FileServer(http.Dir(filepath.Clean(dir)))
@@ -15,6 +19,8 @@ func LoadStatic(routePath, dir string) http.HandlerFunc {
 	}
 }
 
+// watcher is a helper function that watches the static directory for changes.
+// It monitors for various file operations (write, create, remove) and logs them.
 func watcher(staticDir string) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {

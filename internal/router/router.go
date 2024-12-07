@@ -1,3 +1,4 @@
+// Package router provides a simple and efficient HTTP router for building web applications.
 package router
 
 import (
@@ -11,32 +12,39 @@ import (
 	"strings"
 )
 
+// route represents a single route in the router, including its pattern, handler function, and associated middlewares.
 type route struct {
-	pattern     *regexp.Regexp
-	handler     http.HandlerFunc
-	middlewares []middleware.Middleware
+	pattern     *regexp.Regexp          // Compiled regex storing so that bottleneck is handled and for matching the route
+	handler     http.HandlerFunc        // Function to handle requests for this route
+	middlewares []middleware.Middleware // List of middlewares for this route
 }
 
+// Router is the main structure responsible for holding all registered routes organized by HTTP method.
 type Router struct {
 	routes map[string][]route
 }
 
-func New() *Router {
+// Init initializes a new Router instance with an empty route map.
+func Init() *Router {
 	return &Router{
 		routes: make(map[string][]route),
 	}
 }
 
+// normalizePath trims trailing slashes from the path to ensure consistent routing behavior.
 func normalizePath(path string) string {
 	return strings.TrimSuffix(path, "/")
 }
 
+// AddRoute registers a new route with the specified method, path, handler function, and optional middlewares.
 func (r *Router) AddRoute(method, path string, handler http.HandlerFunc, middlewares ...middleware.Middleware) {
 	path = normalizePath(path)
 
+	// Convert path parameters (e.g., :id, :name, :hawk, :wing) into named regex groups for matching
 	regexStr := "^" + regexp.MustCompile(`:([a-zA-Z_][a-zA-Z0-9_]*)`).ReplaceAllString(path, `(?P<$1>[^/]+)`) + "$"
 	compiledRegex := regexp.MustCompile(regexStr)
 
+	// Prepend logger middleware to the list of middlewares as it is default
 	middlewares = append([]middleware.Middleware{middleware.Logger}, middlewares...)
 
 	r.routes[method] = append(r.routes[method], route{
@@ -46,6 +54,8 @@ func (r *Router) AddRoute(method, path string, handler http.HandlerFunc, middlew
 	})
 }
 
+// GetRouteParams retrieves dynamic path parameters from the request context.
+// This assumes that the parameters were previously extracted and stored in the context.
 func (r *Router) GetRouteParams(req *http.Request) map[string]string {
 	if params, ok := req.Context().Value("params").(map[string]string); ok {
 		return params
@@ -53,6 +63,7 @@ func (r *Router) GetRouteParams(req *http.Request) map[string]string {
 	return nil
 }
 
+// dynamicParams extracts dynamic parameters (e.g., :id, :name, :hawk) from a path based on a given route pattern.
 func (r *Router) dynamicParams(pathPattern, actualPath string) map[string]string {
 	params := make(map[string]string)
 	re := regexp.MustCompile(pathPattern)
@@ -67,6 +78,7 @@ func (r *Router) dynamicParams(pathPattern, actualPath string) map[string]string
 	return params
 }
 
+// ServeHTTP handles incoming HTTP requests by matching them against registered routes and executing the corresponding handler function.
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	method := req.Method
 	path := normalizePath(req.URL.Path)
@@ -93,6 +105,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	http.NotFound(w, req)
 }
 
+// extractParams extracts dynamic parameters from a matched path based on the route's regex pattern.
 func extractParams(pattern *regexp.Regexp, path string) map[string]string {
 	params := make(map[string]string)
 	matches := pattern.FindStringSubmatch(path)
@@ -106,10 +119,12 @@ func extractParams(pattern *regexp.Regexp, path string) map[string]string {
 	return params
 }
 
+// LoadStatic registers a route to serve static files from a specified directory.
 func (r *Router) LoadStatic(routePath, dir string) {
 	r.AddRoute("GET", routePath+"(.*)", static.LoadStatic(routePath, dir))
 }
 
+// Start initializes and starts an HTTP server on the specified port, using the router instance to handle incoming requests.
 func Start(port string, r *Router) {
 	fmt.Printf("Hawkwing server is running on port %s\n", port)
 	fmt.Printf("Url: http://localhost%s\n", port)

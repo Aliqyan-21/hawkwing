@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	app := router.New()
+	app := router.Init()
 
 	render.LoadTemplates("./cmd/templates")
 
