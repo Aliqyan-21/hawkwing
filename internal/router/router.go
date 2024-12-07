@@ -50,7 +50,7 @@ func (r *Router) AddRoute(method, path string, handler http.HandlerFunc, middlew
 	compiledRegex := regexp.MustCompile(regexStr)
 
 	// Prepend logger middleware to the list of middlewares as it is default
-	middlewares = append([]middleware.Middleware{middleware.Logger}, middlewares...)
+	middlewares = append([]middleware.Middleware{middleware.Logger, middleware.ErrorHandler}, middlewares...)
 
 	r.routes[method] = append(r.routes[method], route{
 		pattern:     compiledRegex,

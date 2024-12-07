@@ -12,13 +12,30 @@ import (
 // Middlewares are used to modify or extend the behavior of the original handler.
 type Middleware func(http.HandlerFunc) http.HandlerFunc
 
+// responseWriter is a custom HTTP response writer that captures the status code.
+type responseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
 // Logger is a middleware that logs incoming HTTP requests to the standard logger.
-// It logs the request method and URL path. It is the part of handler function by default
+// It logs the request method and URL path. (default for all routes)
 func Logger(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		log.Printf("Request received: %s %s", req.Method, req.URL.Path)
-		next(w, req)
+
+		ww := &responseWriter{ResponseWriter: w}
+		next(ww, req)
+
+		log.Printf("Response: %d %s", ww.statusCode, http.StatusText(ww.statusCode))
 	}
+}
+
+// WriteHeader captures the status code and passes it to the original WriteHeader method.
+// Automatically called through the http.ResponseWriter interface whenever a status code is set.
+func (rw *responseWriter) WriteHeader(statusCode int) {
+	rw.statusCode = statusCode
+	rw.ResponseWriter.WriteHeader(statusCode)
 }
 
 // Auth is a middleware that checks for a valid authorization token in the request header.
@@ -49,5 +66,18 @@ func ContentType(contentTypes []string, next http.HandlerFunc) http.HandlerFunc 
 		}
 		http.Error(w, "Invalid Content-Type", http.StatusBadRequest)
 		log.Printf("Invalid Content-Type: %s", contentType)
+	}
+}
+
+// ErrorHandler is a middleware that recovers from panics, logs the error, and returns an internal server error response. (default for all routes)
+func ErrorHandler(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				log.Printf("Error: %v", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			}
+		}()
+		next(w, req)
 	}
 }
