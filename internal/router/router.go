@@ -112,6 +112,7 @@ func (r *Router) LoadStatic(routePath, dir string) {
 
 func Start(port string, r *Router) {
 	fmt.Printf("Hawkwing server is running on port %s\n", port)
+	fmt.Printf("Url: http://localhost%s\n", port)
 	err := http.ListenAndServe(port, r)
 	if err != nil {
 		log.Fatalf("Could not start server: %s\n", err)
