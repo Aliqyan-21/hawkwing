@@ -6,16 +6,16 @@ Hawkwing is a blazing-fast, minimalist web framework for developers who value si
 
 ---
 
-## 🚀 **Why Hawkwing?**
+## 🚀 **What Makes Hawkwing Different?**
 
 - **Minimalist:** Focused on core features you need, nothing more.
-- **Efficient:** Built with Go's native power and performance.
-- **Developer-Friendly:** Easy-to-use APIs, hot-reloading for templates and static files.
-- **Customizable:** Middleware and routing designed to suit any web application.
+- **Blazing Fast:** Leverages Go's native power for optimal performance..
+- **Elegant API:** Easy-to-use and intuitive for a smooth development experience.
+- **Highly Customizable:** Middleware and routing designed for maximum flexibility.
 
 ---
 
-## ✨ **Features**
+## ✨ **Key Features**
 
 - **Routing with Dynamic Parameters**  
   Add clean and expressive routes with support for dynamic parameters.
@@ -40,40 +40,42 @@ go get github.com/aliqyan-21/hawkwing
 
 ## Example Usage
 
-Here’s a quick demo to show how easy it is to get started:
+This snippet demonstrates how easy it is to get started with Hawkwing:
 
 ```go
 package main
 
 import (
-	"github.com/aliqyan-21/hawkwing"
+    "github.com/aliqyan-21/hawkwing"
 )
 
 func main() {
-    app := hawking.Init()
+    app := hawkwing.Init()
 
     // Load templates and static files
-    hawking.LoadTemplates("templates")
+    hawkwing.LoadTemplates("templates")
     app.LoadStatic("/static", "static")
 
-    // Add routes
+    // Define routes
     app.AddRoute("GET", "/", func(w http.ResponseWriter, r *http.Request) {
-        hawking.RenderHTML(w, "index.html", map[string]interface{}{
+        hawkwing.RenderHTML(w, "index.html", map[string]interface{}{
             "title": "Welcome to Hawkwing!",
         })
     })
 
-    // start server on Localhost only
-    hawkwing.Start("localhost", "8080", r)
+    // Start server (localhost only)
+    hawkwing.Start("localhost", "8080")
 
     // Publicly accessible server
-    // hawkwing.Start("0.0.0.0", "8080", r)
+    // hawkwing.Start("0.0.0.0", "8080")
 }
 ```
 
 📂 Features in Detail
 
-1. Routing Define routes with dynamic parameters and middleware.
+1. Routing:
+   Define routes that accept dynamic parameters and utilize middleware for enhanced functionality.
+
    Example:
 
    ```go
@@ -91,44 +93,52 @@ func main() {
    })
    ```
 
-2. Template Rendering
-   Hawkwing simplifies rendering templates while supporting hot-reloading for development.
+2. Template Rendering:
+   Hawkwing simplifies template rendering and includes hot-reloading for efficient development.
 
    Example:
 
-   > you can store your templates in any folder anywehere just mention the path in the function LoadTemplates(path)
+   > Store your templates anywhere and simply reference the path during initialization:
 
    ```go
    hawking.LoadTemplates("templates")
    hawking.RenderHTML(w, "index.html", data)
    ```
 
-3. Middleware
+3. Middleware:
+   Leverage built-in middleware or create custom solutions for tasks like logging or authentication:
 
-Use built-in middleware or create your own for logging, authentication, and more.
+   Example:
 
-Example:
+   ```go
+   r.AddRoute("GET", "/secure", secureHandler, AuthMiddleware)
+   ```
 
-```go
-r.AddRoute("GET", "/secure", secureHandler, authMiddleware)
-```
+4. Hot-Reloading:
+   Experience automatic reloading for templates and static files whenever changes are made, eliminating the need for server restarts.
 
-4. Hot-Reloading
-   Automatically reload templates and static files when changes are detected. Thus no need to restart the server
+## Future Implementations
+
+I am actively working on enhancing Hawkwing with exciting new features:
+
+- **CLI Tool:** A powerful command-line interface to scaffold projects, generate routes, and manage templates.
+- **Database Integration:** Seamless integration with databases like SQLite for data persistence.
+- **Customizable Middleware Pipeline:** Globally register middleware (e.g., logging, CORS) that applies to all routes, simplifying configuration.
+- **And more!**
 
 ## 🌍 Community and Contributions
 
-Hawkwing is open-source and welcomes contributions! To get involved:
+Hawkwing is an open-source project and welcomes your contributions! Here's how you can get involved:
 
-- Browse open issues or submit new ones.
-- Share your feedback and ideas.
+- Explore open issues or create new ones to report bugs or request features.
+- Share your feedback and suggest improvements for a better framework.
 
 📜 License
-Hawkwing is licensed under the Apache License. See LICENSE for details.
+Hawkwing is distributed under the Apache License. Refer to the LICENSE file for details.
 
 🌟 Acknowledgements
 
-- Built with Go's simplicity and power.
-- Inspired by minimalist frameworks like Flask in python.
+- Built upon the simplicity and power of Go.
+- Inspired by the minimalist approach of frameworks like Flask.
 
 > 🦅 Soar to New Heights with Hawkwing!
