@@ -46,8 +46,7 @@ Here’s a quick demo to show how easy it is to get started:
 package main
 
 import (
-	"github.com/aliqyan-21/hawkwing/internal/router"
-	"github.com/aliqyan-21/hawkwing/internal/render"
+	"github.com/aliqyan-21/hawkwing"
 )
 
 func main() {
