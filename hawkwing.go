@@ -49,3 +49,4 @@ func RenderHTML(w http.ResponseWriter, tmpl string, data interface{}) {
 var LoggerMiddleware = middleware.Logger
 var AuthMiddleware = middleware.Auth
 var ContentTypeMiddleware = middleware.ContentType
+var ErrorHandlerMiddleware = middleware.ErrorHandler
