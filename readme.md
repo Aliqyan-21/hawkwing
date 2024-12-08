@@ -117,6 +117,12 @@ func main() {
 4. Hot-Reloading:
    Experience automatic reloading for templates and static files whenever changes are made, eliminating the need for server restarts.
 
+## Catty Cuteness Voting
+
+> A WebApp made with hawkwing
+
+##### [CattyCuteness](https://github.com/aliqyan-21/cattycuteness)
+
 ## Future Implementations
 
 I am actively working on enhancing Hawkwing with exciting new features:
